@@ -1,0 +1,65 @@
+name: radar
+
+# Started daily by the Cloudflare Worker (worker/index.js, time in wrangler.jsonc).
+# Public repository: Actions minutes are free. A run takes about a minute.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write              # commit data/ and digests/ back to the repo
+
+concurrency:
+  group: radar
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # The newest main, so a queued run starts from the previous run's saved state.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Run radar
+        env:
+          GITHUB_TOKEN: ${{ github.token }}   # GitHub API enrichment: 1,000/hour instead of 60
+          PYTHONIOENCODING: utf-8
+        run: python radar.py
+
+      - name: Save state
+        run: |
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add data digests
+          git diff --cached --quiet || git commit -m "radar: $(date -u +%Y-%m-%d)"
+          git pull --rebase && git push
+
+      # public/ = the digests plus radar.db, published for anyone to download.
+      - name: Publish site (Cloudflare)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          mkdir -p public
+          cp digests/* public/
+          cp data/radar.db public/radar.db
+          npx --yes wrangler@4 deploy
+
+      # The Worker's token to start this workflow, kept as a GitHub secret so every secret
+      # lives in one place. Only runs when the secret is set.
+      - name: Give the Worker its GitHub token
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          WORKER_GH_TOKEN: ${{ secrets.WORKER_GH_TOKEN }}
+        if: ${{ env.WORKER_GH_TOKEN != '' }}
+        run: printf %s "$WORKER_GH_TOKEN" | npx --yes wrangler@4 secret put GH_TOKEN

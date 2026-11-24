@@ -1,0 +1,23 @@
+{
+  // Digest site (static assets in public/, built by the workflow from digests/ and
+  // data/radar.db) plus worker/index.js, whose cron starts the GitHub workflow daily.
+  // The name is part of the public URL: https://trend-radar.q2wz0v.workers.dev
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "trend-radar",
+  "compatibility_date": "2026-11-24",
+  "workers_dev": true,
+  "preview_urls": false,
+  "main": "worker/index.js",
+  "assets": {
+    "directory": "public"
+  },
+  "triggers": {
+    // 21:00 UTC: late in the UTC day, because Trendshift's
+    // "gained today" resets at midnight UTC.
+    "crons": ["0 21 * * *"]
+  },
+  "observability": { "enabled": true },
+  "vars": {
+    "GH_REPO": "dimzachar/trend-radar"
+  }
+}
