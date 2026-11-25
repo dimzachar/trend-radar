@@ -1,9 +1,13 @@
 name: radar
 
-# Started daily by the Cloudflare Worker (worker/index.js, time in wrangler.jsonc).
+# Started daily at 21:00 UTC by the Cloudflare Worker (worker/index.js, time in wrangler.jsonc).
+# GitHub's own schedule is a backup at 21:30 UTC: it does nothing if tonight's run already
+# happened, so a failed Worker trigger means a late digest instead of a missing day.
 # Public repository: Actions minutes are free. A run takes about a minute.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "30 21 * * *"
 
 permissions:
   contents: write              # commit data/ and digests/ back to the repo
@@ -13,7 +17,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Backup runs only: skip when radar-bot already saved today's digest after 20:50 UTC.
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 30
+      - id: check
+        run: |
+          skip=false
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            last=$(git log -1 --author=radar-bot --format=%ct --grep="^radar: $(date -u +%F)$")
+            since=$(date -u -d "today 20:50" +%s)
+            if [ -n "$last" ] && [ "$last" -ge "$since" ]; then skip=true; fi
+          fi
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
+          echo "skip=$skip"
+
   run:
+    needs: gate
+    if: needs.gate.outputs.skip != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

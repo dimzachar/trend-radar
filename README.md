@@ -83,7 +83,8 @@ The run happens at **21:00 UTC** because Trendshift's "gained today" counter res
 so a late run captures most of the day. Snapshots are dated in UTC.
 
 The trigger lives in a Worker rather than in the workflow's `schedule:` because GitHub's scheduler
-is best effort and can start late or skip a run.
+is best effort and can start late or skip a run. The workflow still has a `schedule:` at 21:30 UTC
+as a backup: it exits early when the Worker's run already saved tonight's digest.
 
 ### Data model
 
@@ -113,8 +114,8 @@ to analyse it.
    This deploys the site and the Worker, and hands `WORKER_GH_TOKEN` to the Worker, which then
    starts the workflow every day at 21:00 UTC.
 
-To use GitHub's own scheduler instead of Cloudflare, add `schedule: [{cron: "0 21 * * *"}]` under
-`on:` in `.github/workflows/radar.yml` and skip the Worker.
+Without Cloudflare, skip the Worker and the publish steps: the backup `schedule:` at 21:30 UTC
+runs the workflow on its own every day.
 
 ## Project structure
 
