@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trend Radar — 2026-11-25</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#1c1b19; --muted:#6b6862; --line:#e6e3dc;
+    --accent:#4b3fd1; --accent-soft:#ecebfb;
+    --new:#0f8a5f; --new-soft:#e3f4ec; --hot:#c2410c; --hot-soft:#fdeee4;
+    --cross:#8a5a00; --cross-soft:#fbf1d9; --sticky:#0e7490; --sticky-soft:#e0f2f6;
+    --gh:#24292f; --ts:#5a4fb0; --hn:#ff6600; --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#111110; --panel:#1b1a18; --ink:#eeece6; --muted:#9b978e; --line:#2c2a27;
+      --accent:#a59cff; --accent-soft:#25233d; --new:#4cc995; --new-soft:#15291f;
+      --hot:#ff8a50; --hot-soft:#2e1c12; --cross:#e5b64a; --cross-soft:#2b2412;
+      --sticky:#5cc8e0; --sticky-soft:#11262b; --gh:#c9d1d9;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  a{color:inherit;text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 20px 60px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:38px;height:38px;border-radius:10px;background:conic-gradient(from 200deg,var(--accent),#d65cff,#ff9a5c,var(--accent));display:grid;place-items:center}
+  .logo::after{content:"";width:14px;height:14px;border-radius:50%;background:var(--panel)}
+  h1{font-size:22px;margin:0;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13px}
+  .datenav{display:flex;gap:6px}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:7px 12px;font-size:13px}
+  .btn.off{opacity:.4;pointer-events:none}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+  .stat b{display:block;font-size:24px;letter-spacing:-.02em}
+  .stat span{color:var(--muted);font-size:12.5px}
+  .grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+  .card h2{font-size:15px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center}
+  .card h2 small{color:var(--muted);font-weight:400;font-size:12.5px}
+  .themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:20px}
+  .theme{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--panel);cursor:pointer}
+  .theme.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .theme .t{font-weight:600;display:flex;justify-content:space-between}
+  .theme .t em{font-style:normal;color:var(--muted);font-weight:400;font-size:12.5px}
+  .bar{height:6px;border-radius:99px;background:var(--line);margin:10px 0;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+  .theme p{margin:0;color:var(--muted);font-size:13px}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .tab{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:99px;padding:5px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .tab.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .tab sup{font-size:10px;margin-left:2px}
+  .repo{display:grid;grid-template-columns:28px 1fr auto;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+  .repo:first-child{border-top:0}
+  .rank{color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px;padding-top:2px}
+  .name{font-weight:600} .name span{color:var(--muted);font-weight:400}
+  .desc{color:var(--muted);font-size:13.5px;margin:2px 0 6px;overflow-wrap:anywhere}
+  .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px}
+  .pill{border-radius:99px;padding:2px 8px;font-weight:500}
+  .pill.new{background:var(--new-soft);color:var(--new)} .pill.hot{background:var(--hot-soft);color:var(--hot)}
+  .pill.cross{background:var(--cross-soft);color:var(--cross)} .pill.sticky{background:var(--sticky-soft);color:var(--sticky)}
+  .pill.multi,.pill.tag{background:var(--accent-soft);color:var(--accent)}
+  .src{display:inline-flex;gap:3px}
+  .src i{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:700;color:#fff}
+  .src .gh{background:var(--gh);color:var(--bg)} .src .ts{background:var(--ts)} .src .hn{background:var(--hn)}
+  .lang,.muted{color:var(--muted)}
+  .delta{text-align:right;font-variant-numeric:tabular-nums;min-width:86px}
+  .delta b{display:block;font-size:16px;color:var(--new)}
+  .delta span{color:var(--muted);font-size:12px}
+  svg.spark{display:block;margin-left:auto;margin-top:4px;color:var(--accent)}
+  .idea{border-left:3px solid var(--accent);padding:2px 0 2px 12px;margin:0 0 14px}
+  .idea b{display:block} .idea p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .idea .why{font-size:12px;color:var(--accent);margin-top:4px}
+  .side{display:flex;flex-direction:column;gap:20px}
+  .srcrow{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+  .srcrow:first-of-type{border-top:0}
+  .ok{color:var(--new)} .bad{color:var(--hot)}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  .banner{background:var(--cross-soft);color:var(--cross);border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:18px}
+  footer{color:var(--muted);font-size:12px;margin-top:30px;text-align:center}
+  @media (max-width:860px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const D = {"date": "2026-11-25", "history_days": 5, "generated": "19:35 UTC", "counts": {"gh": 16, "ts": 0, "hn": 4}, "stats": {"unique": 19, "multi": 0, "new": 3, "top_theme": "Agent skills & plugins", "top_theme_share": 38}, "themes": [{"name": "Agent skills & plugins", "count": 6, "width": 100, "examples": ["diagram-design", "last30days-skill", "superpowers", "app-store-compliance", "plugins"]}, {"name": "Web data & scraping", "count": 2, "width": 45, "examples": ["firecrawl", "Ghost-Downloader-3"]}, {"name": "Security & privacy", "count": 2, "width": 40, "examples": ["Claude-BugHunter", "nginx"]}, {"name": "Agent orchestration", "count": 1, "width": 24, "examples": ["CLI-Anything"]}, {"name": "LLMs & inference", "count": 2, "width": 22, "examples": ["minimind", "openvino"]}, {"name": "AI video & media", "count": 1, "width": 19, "examples": ["autoclip"]}, {"name": "Self-hosted alternatives", "count": 1, "width": 13, "examples": ["AFFiNE"]}, {"name": "Dev tools & infra", "count": 1, "width": 7, "examples": ["opensre"]}], "repos": [{"slug": "elementalsouls/Claude-BugHunter", "desc": "A Claude Code skill bundle for bug hunting and external red-team work - 84 skills, 15 slash commands, 681 disclosed-report patterns curated across 24 core vulnerability classes, plus enterprise identity + infrastructure attack matrices.", "lang": "Python", "today": 1644, "today_by": {"gh": 1644}, "total": 22739, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Security & privacy", "hist": [1794, 1721, 2037, 1833, 1644], "hn": null}, {"slug": "cathrynlavery/diagram-design", "desc": "Editorial diagram design for Claude Code, Codex, GitHub Copilot, Cursor, Factory Droid, Qoder, and Pi. 52 diagram types. Self-contained HTML + SVG. No shadows. No Mermaid slop.", "lang": "HTML", "today": 1133, "today_by": {"gh": 1133}, "total": 72864, "src": ["gh"], "sig": ["hot", "sticky"], "tags": [], "mentions": [], "theme": "Agent skills & plugins", "hist": [582, 513, 624, 794, 1133], "hn": null}, {"slug": "firecrawl/firecrawl", "desc": "Knowledge infrastructure to make your agents smarter. Search, scrape and access 550+ data providers through one API.", "lang": "TypeScript", "today": 1131, "today_by": {"gh": 1131}, "total": 209860, "src": ["gh"], "sig": ["hot", "sticky"], "tags": [], "mentions": [], "theme": "Web data & scraping", "hist": [999, 910, 920, 990, 1131], "hn": null}, {"slug": "HKUDS/CLI-Anything", "desc": "\"CLI-Anything: Making ALL Software Agent-Native\" -- CLI-Hub: https://clianything.cc/", "lang": "Python", "today": 1094, "today_by": {"gh": 1094}, "total": 65562, "src": ["gh"], "sig": ["hot", "sticky"], "tags": [], "mentions": [], "theme": "Agent orchestration", "hist": [767, 687, 804, 1075, 1094], "hn": null}, {"slug": "mvanhorn/last30days-skill", "desc": "AI agent skill that researches any topic across Reddit, X, YouTube, HN, Polymarket, and the web - then synthesizes a grounded summary", "lang": "Python", "today": 950, "today_by": {"gh": 950}, "total": 74987, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Agent skills & plugins", "hist": [566, 673, 790, 695, 950], "hn": null}, {"slug": "XiaoYouChR/Ghost-Downloader-3", "desc": "The only downloader you need. 下载器的集大成者。", "lang": "Python", "today": 950, "today_by": {"gh": 950}, "total": 18129, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Web data & scraping", "hist": [774, 690, 1200, 1102, 950], "hn": null}, {"slug": "obra/superpowers", "desc": "An agentic skills framework & software development methodology that works.", "lang": "Shell", "today": 902, "today_by": {"gh": 902}, "total": 326488, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Agent skills & plugins", "hist": [884, 785, 838, 1006, 902], "hn": null}, {"slug": "zhouxiaoka/autoclip", "desc": "AutoClip｜一个链接，一键出片。开源 AI 视频剪辑桌面工具，将播客、访谈、课程等长视频自动剪成短视频，生成字幕、封面和发布文案，适配抖音、小红书、TikTok、Reels 与 YouTube Shorts。Open-source AI video clipping & content repurposing.", "lang": "Python", "today": 868, "today_by": {"gh": 868}, "total": 16079, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "AI video & media", "hist": [689, 640, 940, 981, 868], "hn": null}, {"slug": "mjmirza/app-store-compliance", "desc": "Avoid common App Store and Google Play rejections. Open playbook and pre-submission guard with 124 documented rejection patterns and fixes, privacy manifest and Data safety checks, 114 tracked deadlines (EU AI Act, DSA, COPPA, age laws), and a skill for AI coding agents.", "lang": "Shell", "today": 853, "today_by": {"gh": 853}, "total": 6388, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Agent skills & plugins", "hist": [724, 617, 938, 936, 853], "hn": null}, {"slug": "jingyaogong/minimind", "desc": "🧠 两小时从 0 训出你的 64M 大模型。Train your own 64M LLM from scratch in 2 hours.", "lang": "Python", "today": 828, "today_by": {"gh": 828}, "total": 70875, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "LLMs & inference", "hist": [488, 473, 828, 727, 828], "hn": null}, {"slug": "toeverything/AFFiNE", "desc": "There can be more than Notion and Miro. AFFiNE(pronounced [ə‘fain]) is a next-gen knowledge base that brings planning, sorting and creating all together. Privacy first, open-source, customizable and ready to use.", "lang": "TypeScript", "today": 578, "today_by": {"gh": 578}, "total": 78379, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Self-hosted alternatives", "hist": [577, 537, 593, 589, 578], "hn": null}, {"slug": "cursor/plugins", "desc": "Cursor plugin specification and official plugins", "lang": "TypeScript", "today": 408, "today_by": {"gh": 408}, "total": 19496, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Agent skills & plugins", "hist": [261, 301, 395, 359, 408], "hn": null}, {"slug": "google-labs-code/stitch-skills", "desc": "A library of Agent Skills designed to work with the Stitch MCP server. Each skill follows the Agent Skills open standard, for compatibility with coding agents such as Antigravity, Gemini CLI, Claude Code, Cursor.", "lang": "TypeScript", "today": 352, "today_by": {"gh": 352}, "total": 12927, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Agent skills & plugins", "hist": [324, 516, 425, 401, 352], "hn": null}, {"slug": "Tracer-Cloud/opensre", "desc": "The open-source agent for CI/CD reliability.", "lang": "Python", "today": 343, "today_by": {"gh": 343}, "total": 15462, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Dev tools & infra", "hist": [450, 395, 438, 408, 343], "hn": null}, {"slug": "openvinotoolkit/openvino", "desc": "OpenVINO™ is an open source toolkit for optimizing and deploying AI inference", "lang": "C++", "today": 188, "today_by": {"gh": 188}, "total": 12622, "src": ["gh"], "sig": ["hot", "sticky"], "tags": [], "mentions": [], "theme": "LLMs & inference", "hist": [202, 155, 183, 187, 188], "hn": null}, {"slug": "nginx/nginx", "desc": "The official NGINX Open Source repository.", "lang": "C", "today": 174, "today_by": {"gh": 174}, "total": 33337, "src": ["gh"], "sig": ["sticky"], "tags": [], "mentions": [], "theme": "Security & privacy", "hist": [195, 168, 174, 158, 174], "hn": null}, {"slug": "openai/math", "desc": "The polynomial Hirsch conjecture is false [pdf]", "lang": "Lean", "today": 0, "today_by": {}, "total": 18273, "src": ["hn"], "sig": ["new"], "tags": [], "mentions": ["Hacker News"], "theme": "Other", "hist": [0, 0, 0, 0, 0], "hn": {"points": 934, "comments": 527, "id": "50637220"}}, {"slug": "google-research/google-research", "desc": "Google releases Cogentic papers on integer factorization, discrete logs and more", "lang": "Jupyter Notebook", "today": 0, "today_by": {}, "total": 39390, "src": ["hn"], "sig": ["new"], "tags": [], "mentions": ["Hacker News"], "theme": "Other", "hist": [0, 0, 0, 0, 0], "hn": {"points": 356, "comments": 268, "id": "50642086"}}, {"slug": "xoxorwr/pw-loudness-eq", "desc": "Windows Loudness Equalization, reverse-engineered and ported to PipeWire", "lang": "C", "today": 0, "today_by": {}, "total": 136, "src": ["hn"], "sig": ["new"], "tags": [], "mentions": ["Hacker News"], "theme": "Other", "hist": [0, 0, 0, 0, 0], "hn": {"points": 266, "comments": 158, "id": "50641171"}}]};
+const NAV = {"prev": "2026-11-24.html", "next": null};
+const SRC = {gh:["G","GitHub Trending"], ts:["T","Trendshift"], hn:["Y","Hacker News"]};
+const SIG = {new:"NEW", hot:"ACCELERATING", cross:"CROSSOVER", sticky:"STICKY", multi:"MULTI-SOURCE"};
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => (n ?? 0).toLocaleString("en-US");
+const day = new Date(D.date + "T00:00:00Z").toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"UTC"});
+let filter = "all", theme = null;
+
+function spark(h){
+  if (!h || h.length < 2) return "";
+  const w=70, ht=22, max=Math.max(...h)||1;
+  const pts=h.map((v,i)=>`${(i/(h.length-1))*w},${ht-(v/max)*(ht-2)-1}`).join(" ");
+  return `<svg class="spark" width="${w}" height="${ht}"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function repoRow(r, i){
+  const [o, n] = r.slug.split("/");
+  const by = Object.entries(r.today_by||{}).map(([k,v])=>`${SRC[k][1]}: +${fmt(v)}`).join(" · ");
+  const right = r.today
+    ? `<b>+${fmt(r.today)}</b><span title="${esc(by)}">stars today</span>`
+    : r.hn ? `<b style="color:var(--hn)">${fmt(r.hn.points)}</b><span><a href="https://news.ycombinator.com/item?id=${esc(r.hn.id)}" target="_blank">HN points</a></span>` : "";
+  return `<div class="repo">
+    <div class="rank">${i+1}</div>
+    <div>
+      <a class="name" href="https://github.com/${esc(r.slug)}" target="_blank"><span>${esc(o)} /</span> ${esc(n)}</a>
+      <div class="desc">${esc(r.desc)}</div>
+      <div class="meta">
+        <span class="src">${r.src.map(s=>`<i class="${s}" title="${SRC[s][1]}">${SRC[s][0]}</i>`).join("")}</span>
+        ${r.sig.map(s=>`<span class="pill ${s}">${SIG[s]}</span>`).join("")}
+        ${r.tags.map(t=>`<span class="pill tag">${esc(t)}</span>`).join("")}
+        ${r.mentions.length ? `<span class="muted">mentioned on ${esc(r.mentions.join(", "))}</span>` : ""}
+        ${r.lang ? `<span class="lang">${esc(r.lang)}</span>` : ""}
+        ${r.total ? `<span class="muted">★ ${fmt(r.total)}</span>` : ""}
+      </div>
+    </div>
+    <div class="delta">${right}${spark(r.hist)}</div>
+  </div>`;
+}
+function renderList(){
+  const rows = D.repos.filter(r => (filter==="all" || r.sig.includes(filter)) && (!theme || r.theme===theme));
+  document.getElementById("list").innerHTML = rows.map(repoRow).join("") || `<p class="desc">Nothing in this filter today.</p>`;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.f===filter));
+  document.querySelectorAll(".theme").forEach(t => t.classList.toggle("on", t.dataset.t===theme));
+  document.getElementById("listsub").textContent = theme ? `theme: ${theme} · click again to clear` : "merged & ranked by momentum";
+}
+function opportunities(){
+  // Rule-based: strongest themes, each anchored on its fastest-rising repo.
+  return D.themes.slice(0,3).map(t => {
+    const lead = D.repos.find(r => r.theme===t.name);
+    const fresh = D.repos.filter(r => r.theme===t.name && r.sig.includes("new")).length;
+    return `<div class="idea"><b>${esc(t.name)}</b>
+      <p>${t.count} repos rising${fresh ? `, ${fresh} new today` : ""}. Leader: <a href="https://github.com/${esc(lead.slug)}" target="_blank">${esc(lead.slug)}</a> — ${esc(lead.desc.slice(0,110))}${lead.desc.length>110?"…":""}</p>
+      <div class="why">↳ ${lead.today ? `+${fmt(lead.today)} stars today` : `${fmt(lead.hn?.points)} HN points`}</div></div>`;
+  }).join("");
+}
+function render(){
+  const s = D.stats, sigCount = k => D.repos.filter(r=>r.sig.includes(k)).length;
+  const navBtn = (href, label) => `<a class="btn ${href?"":"off"}" href="${href||"#"}">${label}</a>`;
+  document.getElementById("app").innerHTML = `
+  <header>
+    <div class="brand"><div class="logo"></div>
+      <div><h1>Trend Radar</h1><div class="sub">Daily digest · ${day} · generated ${esc(D.generated)}</div></div></div>
+    <div class="datenav">${navBtn(NAV.prev,"← Previous")}${navBtn(NAV.next,"Next →")}</div>
+  </header>
+  ${D.history_days < 3 ? `<div class="banner">Day ${D.history_days} of history. NEW needs 2 days, ACCELERATING needs 3, STICKY needs 5. Badges and sparklines will fill in as daily runs accumulate.</div>` : ""}
+  <section class="stats">
+    <div class="stat"><b>${s.unique}</b><span>unique repos across ${Object.values(D.counts).filter(Boolean).length} sources</span></div>
+    <div class="stat"><b>${s.multi}</b><span>on 2+ sources</span></div>
+    <div class="stat"><b>${s.new}</b><span>new since last run</span></div>
+    <div class="stat"><b>${s.top_theme_share}%</b><span>of GitHub Trending: ${esc(s.top_theme)}</span></div>
+  </section>
+  <div class="grid">
+    <main>
+      <section class="themes">${D.themes.map(t=>`
+        <div class="theme" data-t="${esc(t.name)}"><div class="t">${esc(t.name)} <em>${t.count} repos</em></div>
+        <div class="bar"><i style="width:${t.width}%"></i></div><p>${esc(t.examples.join(", "))}</p></div>`).join("")}
+      </section>
+      <section class="card">
+        <h2>Watch list <small id="listsub"></small></h2>
+        <div class="tabs">
+          <button class="tab" data-f="all">All<sup>${D.repos.length}</sup></button>
+          ${Object.keys(SIG).map(k=>`<button class="tab" data-f="${k}">${SIG[k][0]+SIG[k].slice(1).toLowerCase()}<sup>${sigCount(k)}</sup></button>`).join("")}
+        </div>
+        <div id="list"></div>
+      </section>
+    </main>
+    <aside class="side">
+      <section class="card"><h2>Strongest themes <small>where to look</small></h2>${opportunities()}</section>
+      <section class="card"><h2>Sources <small>this run</small></h2>
+        ${Object.entries(SRC).map(([k,[l,name]])=>`<div class="srcrow"><span><span class="src"><i class="${k}">${l}</i></span> ${name}</span>
+          <span class="${D.counts[k]?"ok":"bad"}">${D.counts[k] ? `${D.counts[k]} repos` : "failed / none"}</span></div>`).join("")}
+        <div class="note">Fetched directly (no API keys). Hacker News lists only GitHub links on today's front page.</div>
+      </section>
+    </aside>
+  </div>
+  <footer>Trend Radar · <a href="https://github.com/trending">github.com/trending</a> · <a href="https://trendshift.io/">trendshift.io</a> · <a href="https://news.ycombinator.com/">news.ycombinator.com</a></footer>`;
+  document.querySelector(".tabs").addEventListener("click", e => { const b=e.target.closest(".tab"); if(b){filter=b.dataset.f; renderList();} });
+  document.querySelector(".themes").addEventListener("click", e => { const t=e.target.closest(".theme"); if(t){theme = theme===t.dataset.t ? null : t.dataset.t; renderList();} });
+  renderList();
+}
+render();
+</script>
+</body>
+</html>
